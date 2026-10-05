@@ -15,8 +15,9 @@
   --type:'Special Elite','Courier New',monospace;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#14121c;--ink:#f3ecd8;--card:#201c2c;--grain:.2}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#14121c;--ink:#f3ecd8;--card:#201c2c;--grain:.2}:root:not([data-theme="light"]) body::after{mix-blend-mode:screen}}
 :root[data-theme="dark"]{--paper:#14121c;--ink:#f3ecd8;--card:#201c2c;--grain:.2}
+:root[data-theme="dark"] body::after{mix-blend-mode:screen}
 html{scroll-behavior:smooth;scroll-padding-top:calc(70px + env(safe-area-inset-top,0px))}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--type);font-size:17px;line-height:1.5;overflow-x:hidden}
@@ -77,6 +78,8 @@ nav a:hover{background:var(--acid);color:#111}
 .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
 .tabs button{font-family:var(--display);text-transform:uppercase;background:#2a2a2a;color:#eee;border:2px solid #555;padding:6px 14px;cursor:pointer;font-size:1rem}
 .tabs button[aria-pressed="true"]{background:var(--acid);color:#111;border-color:var(--acid)}
+.tabs .openlink{color:var(--acid);font-family:var(--display);text-transform:uppercase;text-decoration:none;font-size:1rem;margin-left:10px}
+.tabs .openlink:hover{text-decoration:underline}
 .tabs .led{margin-left:auto;color:#9f9;font-size:.85rem}
 .tabs .led i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#555;margin-right:6px}
 .tabs .led.on i{background:#f33;box-shadow:0 0 8px #f33}
@@ -95,12 +98,40 @@ nav a:hover{background:var(--acid);color:#111}
 .tracks{list-style:none;margin:0;padding:0;counter-reset:t}
 .tracks li{counter-increment:t;display:flex;gap:12px;padding:12px 4px;border-bottom:2px dashed rgba(243,236,216,.35);font-size:1.1rem}
 .tracks li::before{content:counter(t,decimal-leading-zero);color:var(--acid);font-family:var(--display)}
-.tracks li:first-child::after{content:"NOW PLAYING";order:3;background:var(--pink);color:#111;font-family:var(--display);font-size:.75rem;padding:1px 8px;align-self:center;margin-left:8px}
 .tracks li span:last-child{margin-left:auto;opacity:.7}
 .embed{margin-top:22px}.embed iframe{width:100%;border:0;border-radius:12px;min-height:152px}
 .links{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
 .links a{border:2px solid var(--paper);padding:6px 12px;font-family:var(--display);text-transform:uppercase;text-decoration:none}
 .links a:hover{background:var(--acid);color:#111;border-color:var(--acid)}
+
+/* audio player */
+.player{border:3px solid var(--paper);padding:14px}
+.np{font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin-bottom:10px;display:flex;gap:10px;align-items:center}
+.np b{background:var(--pink);color:#111;font-weight:400;font-size:.75rem;padding:1px 8px;flex:none}
+.np span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctrls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ctrls button{font-size:1.05rem;background:var(--acid);color:#111;border:3px solid #000;padding:6px 12px;cursor:pointer;box-shadow:3px 3px 0 var(--hot)}
+.ctrls button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--hot)}
+.ctrls #pp{background:var(--hot);color:#fff;min-width:54px}
+.ctrls input[type=range]{accent-color:var(--hot);cursor:pointer}
+#seek{flex:1 1 140px;min-width:120px}#vol{width:80px}
+#time{font-size:.85rem;min-width:86px;opacity:.85}
+.tracks{max-height:360px;overflow-y:auto}
+.tracks li{align-items:center;cursor:pointer}
+.tracks li:hover{background:rgba(232,255,58,.14)}
+.tracks li.on{background:var(--hot);color:#fff}
+.tracks li img{width:38px;height:38px;object-fit:cover;border:2px solid var(--paper);flex:none}
+.tracks li .tt{flex:1;min-width:0;overflow-wrap:anywhere}
+.tracks li .ln{opacity:.7;font-size:.9rem}
+.tracks li a{color:inherit;text-decoration:none;font-family:var(--display);padding:0 6px;opacity:.75}
+.tracks li a:hover{opacity:1;color:var(--acid)}
+.tracks li.on a:hover{color:#fff}
+.player.offline .ctrls{opacity:.4;pointer-events:none}
+.full{margin-top:14px;border:3px solid var(--paper);padding:10px}
+.full summary{cursor:pointer;font-family:var(--display);text-transform:uppercase}
+.full iframe{width:100%;height:450px;border:0;border-radius:12px;margin-top:10px}
+.hint{font-size:.78rem;opacity:.75;margin-top:8px}.hint a{color:var(--acid)}
+.tape:not(.playing) .reel{animation-play-state:paused}
 
 /* news */
 .news{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:34px;margin-top:40px}
@@ -152,6 +183,8 @@ footer .big{font-family:var(--display);font-size:clamp(2.4rem,8vw,5rem);text-tra
 footer p{opacity:.8;margin:8px 0 0}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,200%);background:var(--acid);color:#111;border:3px solid #111;padding:10px 18px;font-family:var(--display);text-transform:uppercase;z-index:120;transition:transform .25s;box-shadow:4px 4px 0 #111;max-width:90vw;text-align:center}
 .toast.show{transform:translate(-50%,0)}
+.sample{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:110;max-width:300px;background:#111;color:var(--acid);border:2px dashed var(--acid);padding:8px 12px;font-size:.8rem;line-height:1.3}
+.sample[hidden]{display:none}
 .rv{opacity:0;transform:translateY(40px)}
 .rv.in{opacity:1;transform:none;transition:opacity .6s,transform .6s}
 @media (max-width:760px){.music-grid{grid-template-columns:1fr}.sticker{width:92px;height:92px;font-size:1.05rem;top:0}section{padding:60px 0}nav a{padding:6px 7px}.logo{font-size:1.2rem}.sh.tri,.sh.sq{display:none}}
@@ -189,13 +222,26 @@ footer p{opacity:.8;margin:8px 0 0}
   <span class="tag">side A / side B</span>
   <h2>The <span class="hl">Tape</span></h2>
   <div class="music-grid">
-    <div class="tape rv">
+    <a class="tape rv" id="tape" href="#" target="_blank" rel="noopener" aria-label="Play the tape" style="display:block;text-decoration:none">
       <div class="label">LEON FREEMAN<small>Vol. 1 — recorded loud</small></div>
       <div class="reels"><div class="reel"></div><div class="reel"></div></div>
-    </div>
+    </a>
     <div class="rv">
-      <ol class="tracks" id="tracks"></ol>
-      <div class="embed" id="embed"></div>
+      <div class="player" id="player">
+        <div class="np"><b>NOW PLAYING</b><span id="np">Loading tracks…</span></div>
+        <div class="ctrls">
+          <button id="prev" aria-label="Previous track">⏮</button>
+          <button id="pp" aria-label="Play">▶</button>
+          <button id="next" aria-label="Next track">⏭</button>
+          <input id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek">
+          <span id="time">0:00</span>
+          <input id="vol" type="range" min="0" max="100" value="100" aria-label="Volume">
+        </div>
+        <ol class="tracks" id="tracks"></ol>
+        <p class="hint">Songs from your Apple Music page. Apple only lets websites play 30-second previews, so tap the ↗ next to a song for the full track, or open the full player below.</p>
+      </div>
+      <details class="full" id="full"><summary>Play full songs with Apple Music</summary><div id="amwrap"></div></details>
+      <p class="hint" style="margin-top:18px">Also listen on</p>
       <div class="links" id="listen"></div>
     </div>
   </div>
@@ -235,23 +281,27 @@ footer p{opacity:.8;margin:8px 0 0}
   <div class="big">Stay loud.</div>
   <p>© <span id="yr"></span> Leon Freeman. All rights reserved. Kickflip responsibly.</p>
 </div></footer>
+<div class="sample" id="sample" hidden>Sample content: news posts, prices and some links are placeholders. Edit CONFIG, then set <code>sample:false</code>.</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ===== EDIT ME: everything the site needs lives here ===== */
 const CONFIG = {
   artist: "Leon Freeman",
-  twitch: "",            // e.g. "yourchannel"
-  kick: "",              // e.g. "yourchannel"
-  youtube: "",           // YouTube CHANNEL ID, starts with UC...
-  spotifyEmbed: "",      // e.g. "artist/0abc123" or "album/0abc123"
-  listen: [ {n:"Spotify",u:""}, {n:"SoundCloud",u:""}, {n:"Bandcamp",u:""}, {n:"Apple",u:""} ],
+  sample: true,          // true = shows a "sample content" banner. The news posts, prices and Instagram handle below are PLACEHOLDERS: replace them, then set this to false.
+  twitch: "leonmusic47",
+  kick: "thelenard47",
+  youtube: "UCZGfFP46RSBqNu4FDZiNZWA",   // channel ID for @leonfreeman8697
+  appleArtistId: "1557115126",           // Apple Music artist ID (the number at the end of your Apple Music link). The tape pulls your songs from it
+  appleCountry: "us",
+  appleUrl: "https://music.apple.com/us/artist/leon-freeman/1557115126",
+  trackLimit: 25,        // how many songs to show
+  listen: [ {n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"}, {n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"} ],
   donateUrl: "",         // Stripe Payment Link, Ko-fi or Patreon
   socials: [
     {n:"Instagram",u:"https://instagram.com/freeman.leon"},
-    {n:"TikTok",u:""},{n:"YouTube",u:""},{n:"Twitch",u:""},{n:"Kick",u:""},{n:"X",u:""},{n:"Spotify",u:""},{n:"Discord",u:""}
+    {n:"TikTok",u:"https://www.tiktok.com/@leonfreemanmusic"},{n:"YouTube",u:"https://www.youtube.com/@leonfreeman8697"},{n:"Twitch",u:"https://www.twitch.tv/leonmusic47"},{n:"Kick",u:"https://kick.com/thelenard47"},{n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"},{n:"Apple Music",u:"https://music.apple.com/us/artist/leon-freeman/1557115126"},{n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"}
   ],
-  tracks: [ ["Flannel & Fire","3:12"],["Saturday Morning Static","2:48"],["Dial-Up Dreams","3:41"],["Skate Park Sermon","2:57"],["Feedback Loop","4:05"],["Last Bus Home","3:30"] ],
   posts: [
     {d:"OCT 2026",t:"The tape is finally here",b:"Six tracks, zero filler. Recorded in a bedroom with a busted amp and a borrowed drum machine. Grab it, play it loud, tell your friends.",x:"Full story: why it took two years, who helped, and the one song that almost didn't make it."},
     {d:"SEP 2026",t:"Friday night streams are back",b:"Live sets, beat-making and Q&A every Friday. Come hang out in chat.",x:"Streaming on Twitch, Kick and YouTube at the same time, so pick your spot."},
@@ -273,34 +323,79 @@ const $=s=>document.querySelector(s), E=(t,c,h)=>{const e=document.createElement
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.k);toast.k=setTimeout(()=>t.classList.remove('show'),2600)};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('#yr').textContent=new Date().getFullYear();
+$('#sample').hidden=!CONFIG.sample;
 
 /* live tv */
 const screen=$('#screen'),tabs=$('#tabs');
 const noise=E('canvas');noise.width=160;noise.height=90;
 const ctx=noise.getContext('2d'),img=ctx.createImageData(160,90);
-let nid;function stat(){for(let i=0;i<img.data.length;i+=4){const v=Math.random()*255;img.data[i]=img.data[i+1]=img.data[i+2]=v;img.data[i+3]=255}ctx.putImageData(img,0,0);nid=setTimeout(()=>requestAnimationFrame(stat),90)}
+let noiseOn=false;
+function stat(){if(!noiseOn)return;for(let i=0;i<img.data.length;i+=4){const v=Math.random()*255;img.data[i]=img.data[i+1]=img.data[i+2]=v;img.data[i+3]=255}ctx.putImageData(img,0,0);setTimeout(()=>{if(noiseOn&&!document.hidden)requestAnimationFrame(stat);else if(noiseOn)document.addEventListener('visibilitychange',()=>stat(),{once:true})},90)}
 const srcs={
   Twitch:c=>`https://player.twitch.tv/?channel=${encodeURIComponent(c)}&parent=${location.hostname}&muted=true`,
   Kick:c=>`https://player.kick.com/${encodeURIComponent(c)}`,
-  YouTube:c=>`https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(c)}`
+  YouTube:c=>ytMode==='uploads'?`https://www.youtube.com/embed/videoseries?list=UU${encodeURIComponent(c.slice(2))}`:`https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(c)}`
 };
+let ytMode='live'; // 'live' shows your current stream; 'uploads' shows your latest videos (works when you're offline)
 const keys={Twitch:'twitch',Kick:'kick',YouTube:'youtube'};
 function show(name){
-  clearTimeout(nid);screen.innerHTML='';
+  noiseOn=false;screen.innerHTML='';
+  const ol=$('#openlink');if(ol){ol.href=pages[name];ol.textContent='Watch on '+name+' ↗'}
+  if(typeof ytBtn!=='undefined'){ytBtn.hidden=name!=='YouTube';ytBtn.textContent=ytMode==='live'?'Latest videos':'Back to live'}
   [...tabs.querySelectorAll('button')].forEach(b=>b.setAttribute('aria-pressed',b.dataset.n===name));
   screen.append(E('div','bug','CH 97'));
   const id=CONFIG[keys[name]];
-  if(id){const f=E('iframe');f.src=srcs[name](id);f.allowFullscreen=true;f.allow='autoplay; fullscreen';f.title=name+' live';screen.append(f);$('#led').className='led on';$('#led').lastChild.textContent='ON AIR'}
-  else{screen.append(noise);stat();screen.append(E('div','msg',`No signal<small>${name} isn't linked yet. Add the channel in CONFIG.</small>`));$('#led').className='led';$('#led').lastChild.textContent='OFF AIR'}
+  const needsHost=(name==='Twitch'||name==='YouTube')&&!location.hostname; // Twitch and YouTube embeds need a real domain, not a local file
+  if(id&&!needsHost){const f=E('iframe');f.src=srcs[name](id);f.allowFullscreen=true;f.allow='autoplay; fullscreen';f.title=name+' live';screen.append(f);$('#led').className='led on';$('#led').lastChild.textContent='ON AIR'}
+  else{noiseOn=true;screen.append(noise);stat();screen.append(E('div','msg',needsHost?`No signal<small>${name} only plays once this page is hosted online (e.g. GitHub Pages). Use "Watch on ${name}" for now.</small>`:`No signal<small>${name} isn't linked yet. Add the channel in CONFIG.</small>`));$('#led').className='led';$('#led').lastChild.textContent='OFF AIR'}
 }
 Object.keys(keys).forEach(n=>{const b=E('button','',n);b.dataset.n=n;b.onclick=()=>show(n);tabs.append(b)});
+const pages={Twitch:'https://www.twitch.tv/'+CONFIG.twitch,Kick:'https://kick.com/'+CONFIG.kick,YouTube:'https://www.youtube.com/channel/'+CONFIG.youtube+'/live'};
+const openLink=E('a','openlink','Open on site ↗');openLink.target='_blank';openLink.rel='noopener';openLink.id='openlink';tabs.append(openLink);
+const ytBtn=E('button','','Latest videos');ytBtn.hidden=true;ytBtn.title='Switch between your live stream and your latest uploads';
+ytBtn.onclick=()=>{ytMode=ytMode==='live'?'uploads':'live';show('YouTube')};tabs.append(ytBtn);
 const led=E('span','led','<i></i>OFF AIR');led.id='led';tabs.append(led);
 show(Object.keys(keys).find(n=>CONFIG[keys[n]])||'Twitch');
 
 /* music */
-$('#tracks').innerHTML=CONFIG.tracks.map(t=>`<li><span>${esc(t[0])}</span><span>${esc(t[1])}</span></li>`).join('');
-if(CONFIG.spotifyEmbed)$('#embed').innerHTML=`<iframe src="https://open.spotify.com/embed/${esc(CONFIG.spotifyEmbed)}?theme=0" loading="lazy" allow="encrypted-media" title="Spotify player"></iframe>`;
-CONFIG.listen.forEach(l=>{const a=E('a','',esc(l.n));a.href=l.u||'#';a.target='_blank';a.rel='noopener';if(!l.u)a.onclick=e=>{e.preventDefault();toast(l.n+' link not added yet')};$('#listen').append(a)});
+/* audio player: your Apple Music songs (30-second previews) drive the cassette controls */
+(function(){
+  const fmt=ms=>{const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+  const list=$('#tracks'),box=$('#player'),pp=$('#pp'),seek=$('#seek'),tm=$('#time'),np=$('#np'),tape=$('#tape'),prev=$('#prev'),next=$('#next'),vol=$('#vol'),full=$('#full'),amw=$('#amwrap');
+  const au=new Audio();au.preload='none';
+  let T=[],cur=-1,errs=0;
+  const embed=()=>{if(!amw.firstChild)amw.innerHTML=`<iframe src="${esc(CONFIG.appleUrl.replace('https://music.apple.com','https://embed.music.apple.com'))}" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation" loading="lazy" title="Apple Music player"></iframe>`};
+  full.ontoggle=()=>{if(full.open)embed()};
+  const ui=()=>{const p=!au.paused;pp.textContent=p?'⏸':'▶';pp.setAttribute('aria-label',p?'Pause':'Play');tape.classList.toggle('playing',p);[...list.children].forEach((li,i)=>li.classList.toggle('on',i===cur));np.textContent=cur>-1?T[cur].t:(T.length?'Press play':'Loading tracks…')};
+  function load(i,go){if(!T[i])return;cur=i;au.src=T[i].src;seek.value=0;tm.textContent='0:00';ui();if(go)au.play().catch(()=>toast('Tap play to start the audio'))}
+  const step=d=>{if(!T.length)return;if(d<0&&au.currentTime>3){au.currentTime=0;return}load((cur+d+T.length)%T.length,true)};
+  function fallback(){box.classList.add('offline');np.textContent='Use the Apple Music player below.';full.open=true;embed()}
+  box.classList.add('offline');ui();
+  const url=`https://itunes.apple.com/lookup?id=${CONFIG.appleArtistId}&entity=song&limit=${CONFIG.trackLimit}&country=${CONFIG.appleCountry}`;
+  const jsonp=u=>new Promise((ok,no)=>{const n='_it'+Date.now(),s=document.createElement('script');window[n]=d=>{ok(d);s.remove();delete window[n]};s.onerror=no;s.src=u+'&callback='+n;document.head.append(s)});
+  fetch(url).then(r=>r.json()).catch(()=>jsonp(url)).then(j=>{
+    const seen=new Set();
+    T=(j.results||[]).filter(x=>x.wrapperType==='track'&&x.previewUrl&&x.trackName).filter(x=>{const k=x.trackName.toLowerCase();if(seen.has(k))return false;seen.add(k);return true}).map(x=>({t:x.trackName,src:x.previewUrl,link:x.trackViewUrl,art:(x.artworkUrl100||'').replace('100x100','120x120'),len:x.trackTimeMillis||0}));
+    if(!T.length)throw 0;
+    list.innerHTML=T.map((t,i)=>`<li data-i="${i}" tabindex="0" role="button"><img src="${esc(t.art)}" alt="" loading="lazy"><span class="tt">${esc(t.t)}</span><span class="ln">${fmt(t.len)}</span><a href="${esc(t.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(t.t)} in Apple Music">↗</a></li>`).join('');
+    box.classList.remove('offline');ui();
+  }).catch(fallback);
+  au.ontimeupdate=()=>{const d=au.duration||30;seek.value=Math.min(1000,au.currentTime/d*1000);tm.textContent=fmt(au.currentTime*1000)+' / '+fmt(d*1000)};
+  au.onplay=au.onpause=ui;
+  au.onplaying=()=>{errs=0};
+  au.onended=()=>step(1);
+  au.onerror=()=>{errs++;if(errs<=T.length)step(1);else toast('Could not load the audio')};
+  pp.onclick=()=>{if(!T.length)return;if(cur<0)load(0,true);else au.paused?au.play():au.pause()};
+  prev.onclick=()=>step(-1);next.onclick=()=>step(1);
+  list.onclick=e=>{if(e.target.closest('a'))return;const li=e.target.closest('li[data-i]');if(li)load(+li.dataset.i,true)};
+  list.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('a')){const li=e.target.closest('li[data-i]');if(li){e.preventDefault();load(+li.dataset.i,true)}}};
+  seek.oninput=()=>{if(au.duration)au.currentTime=seek.value/1000*au.duration};
+  vol.oninput=()=>{au.volume=vol.value/100};
+  // the cassette is a play/pause button once songs are loaded; before that it opens Apple Music
+  tape.addEventListener('click',e=>{if(T.length){e.preventDefault();pp.click()}});
+})();
+CONFIG.listen.forEach(l=>{const a=E('a','',esc(l.n)+' ↗');a.href=l.u||'#';a.target='_blank';a.rel='noopener';if(!l.u)a.onclick=e=>{e.preventDefault();toast(l.n+' link not added yet')};$('#listen').append(a)});
+$('#tape').href=CONFIG.appleUrl||'#';
 
 /* news */
 $('#news-list').innerHTML=CONFIG.posts.map(p=>`<article class="post rv"><time>${esc(p.d)}</time><h3>${esc(p.t)}</h3><p style="margin:0">${esc(p.b)}</p><details><summary>Read more</summary><p>${esc(p.x)}</p></details></article>`).join('');
