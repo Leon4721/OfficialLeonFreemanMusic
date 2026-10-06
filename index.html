@@ -568,7 +568,8 @@ const EXTS=['png','jpg','jpeg','webp'],LETTERS='abcdefgh';
 const mdir=()=>CONFIG.mediaDir||'';
 const probeImg=src=>new Promise(r=>{const x=new Image();x.onload=()=>r(src);x.onerror=()=>r(null);x.src=src});
 const probeVid=src=>new Promise(r=>{const x=document.createElement('video');let t=setTimeout(()=>done(null),4000);const done=v=>{clearTimeout(t);x.removeAttribute('src');x.load();r(v)};x.preload='metadata';x.onloadedmetadata=()=>done(src);x.onerror=()=>done(null);x.src=src});
-async function findImg(base,letter){for(const e of EXTS){const u=probeImg(mdir()+base+letter+'.'+e);if(await u)return mdir()+base+letter+'.'+e}return null}
+const DIRS=[CONFIG.mediaDir,'asset/','assets/','images/',''];
+async function findImg(base,letter){for(const d of DIRS){for(const e of EXTS){const p=d+base+letter+'.'+e;if(await probeImg(p))return p}}console.warn('No image found for',base+letter);return null}
 async function findVid(it){if(it.v)return mdir()+it.v;for(const e of ['mp4','webm']){const u=mdir()+it.m+'.'+e;if(await probeVid(u))return u}return null}
 const firstPhoto=it=>it._first||(it._first=it.m?findImg(it.m,'a'):Promise.resolve(null));
 const allMedia=it=>it._all||(it._all=(async()=>{const out=[];if(it.m){for(const L of LETTERS){const u=await findImg(it.m,L);if(!u)break;out.push({t:'img',src:u})}}if(it.m||it.v){const v=await findVid(it);if(v)out.push({t:'video',src:v})}return out})());
