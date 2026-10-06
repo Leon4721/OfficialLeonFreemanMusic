@@ -167,7 +167,27 @@ nav a:hover{background:var(--acid);color:#111}
 .item .pow b{font-family:var(--marker);color:var(--hot);font-weight:400;font-size:1.05rem;margin-right:6px}
 .ball{width:22px;height:22px;border-radius:50%;border:2px solid #111;display:grid;place-items:center;font-style:normal;font-size:.72rem;line-height:1;background:radial-gradient(circle at 30% 28%,#fff3a0,#ffb300 40%,#ff7a00 75%,#d64500);color:#c1121f;box-shadow:1px 1px 0 #111}
 .ball.off{background:#d9d4c3;color:#a8a28f;opacity:.55;box-shadow:none}
-.item .pw-note{font-size:.72rem;opacity:.7;margin:0}
+.item .art{touch-action:manipulation;cursor:zoom-in;-webkit-tap-highlight-color:transparent}
+.item .art img{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none;user-select:none}
+.item .art .zoom{position:absolute;right:6px;bottom:6px;z-index:2;background:#111;color:var(--acid);font-family:var(--display);text-transform:uppercase;font-size:.72rem;letter-spacing:.04em;padding:2px 8px;transform:none;pointer-events:none}
+.item .art .zoom::before{content:"🔍 click to view"}
+@media (hover:none){.item .art .zoom::before{content:"🔍 double-tap"}}
+.item .art:focus-visible{outline:4px solid var(--hot);outline-offset:2px}
+/* card viewer */
+dialog.view{max-width:720px}
+.view .stage{position:relative;aspect-ratio:1;max-height:70vh;width:100%;background:var(--stage,#e8ff3a);border-bottom:4px solid #111;display:grid;place-items:center;overflow:hidden;touch-action:pan-y}
+.view #v-slide{position:absolute;inset:0;display:grid;place-items:center}
+.view #v-slide img,.view #v-slide video{width:100%;height:100%;object-fit:contain;display:block;-webkit-user-drag:none}
+.view #v-slide .soon{font-family:var(--display);text-transform:uppercase;font-size:1.6rem;color:#111;text-align:center;padding:20px}
+.view .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:3px solid #111;background:var(--acid);color:#111;font-size:1.3rem;cursor:pointer;box-shadow:3px 3px 0 #111;display:grid;place-items:center;padding:0}
+.view .arrow:active{transform:translateY(-50%) translate(2px,2px);box-shadow:1px 1px 0 #111}
+.view #v-prev{left:10px}.view #v-next{right:10px}
+.view .arrow[hidden]{display:none}
+.view .cap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 18px;font-family:var(--display);text-transform:uppercase}
+.view .dots{display:flex;gap:8px}
+.view .dots button{width:16px;height:16px;border-radius:50%;border:3px solid #111;background:var(--card);padding:0;cursor:pointer}
+.view .dots button[aria-current="true"]{background:var(--hot)}
+.view .vfoot{padding:0 18px 18px}
 .shop-contact{margin-top:40px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
 .shop-contact span{font-family:var(--marker);font-size:1.15rem}
 .item .btn{margin-top:auto;text-align:center;font-size:1rem;padding:9px;background:#111;color:#fff;box-shadow:3px 3px 0 var(--hot)}
@@ -364,6 +384,17 @@ footer p{opacity:.8;margin:8px 0 0}
   </div>
 </dialog>
 
+<dialog class="req view" id="view" aria-labelledby="v-title">
+  <div class="top"><h3 id="v-title">Card</h3><button type="button" id="v-x" aria-label="Close">✕</button></div>
+  <div class="stage" id="v-stage">
+    <div id="v-slide"></div>
+    <button class="arrow" id="v-prev" type="button" aria-label="Previous" hidden>◀</button>
+    <button class="arrow" id="v-next" type="button" aria-label="Next" hidden>▶</button>
+  </div>
+  <div class="cap"><span id="v-cap"></span><div class="dots" id="v-dots"></div></div>
+  <div class="vfoot"><button class="btn" type="button" id="v-req">Request this piece</button></div>
+</dialog>
+
 <dialog class="req" id="contact" aria-labelledby="c-title">
   <div class="top"><h3 id="c-title">Contact us</h3><button type="button" id="c-x" aria-label="Close">✕</button></div>
   <form id="c-form" novalidate>
@@ -417,6 +448,14 @@ const CONFIG = {
   orderKey: "",
   orderEmail: "",
 
+  /* ---- CARD PHOTOS / VIDEO ----
+     mediaDir: folder the photos live in. "" = same folder as index.html, or e.g. "images/" (keep the trailing slash).
+     m: base file name for a card. The site looks for m+"a", m+"b", m+"c"... (png, jpg, jpeg or webp) in order:
+        shirt1a.png = front (also the card picture), shirt1b.png = back, shirt1c.png = extra, and so on.
+        An optional video named shirt1.mp4 (or .webm) is added as the last slide. Or set v:"anything.mp4" yourself.
+     Cards with no photo yet just show their colour. */
+  mediaDir: "",
+
   socials: [
     {n:"Instagram",u:"https://instagram.com/freeman.leon"},
     {n:"TikTok",u:"https://www.tiktok.com/@leonfreemanmusic"},{n:"YouTube",u:"https://www.youtube.com/@leonfreeman8697"},{n:"Twitch",u:"https://www.twitch.tv/leonmusic47"},{n:"Kick",u:"https://kick.com/thelenard47"},{n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"},{n:"Apple Music",u:"https://music.apple.com/us/artist/leon-freeman/1557115126"},{n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"}
@@ -426,14 +465,14 @@ const CONFIG = {
     {d:"SEP 2026",t:"Friday night streams are back",b:"Live sets, beat-making and Q&A every Friday. Come hang out in chat.",x:"Streaming on Twitch, Kick and YouTube at the same time, so pick your spot."},
     {d:"AUG 2026",t:"Behind the Dial-Up Dreams video",b:"Shot on a handheld camcorder for that proper 90s tape look.",x:"Thanks to everyone who showed up in their worst thrift-store jackets."}
   ],
-  // art: text on the card; deck:true draws a skateboard instead. o = size/option choices shown in the request form. r = rarity, which sets the power rating (COMMON 1, RARE 3, HOLO 5, GRAIL 7 balls)
+  // c = card background colour. o = size/option choices in the request form. r = rarity, which sets the power rating (COMMON 1, RARE 3, HOLO 5, GRAIL 7 balls)
   shop: [
-    {n:"Tape Logo Tee",o:["XS","S","M","L","XL","XXL"],c:"#19d3c5",a:"LF\nTEE",no:"001",r:"RARE"},
-    {n:"Cassette (Limited)",o:["Standard"],c:"#ff4fb8",a:"VOL.\n1",no:"002",r:"HOLO"},
-    {n:"Skate Deck",o:["8.0\"","8.25\"","8.5\""],c:"#f3ecd8",deck:true,a:"LEON",no:"003",r:"GRAIL"},
-    {n:"Flannel Beanie",o:["One size"],c:"#2447ff",a:"STAY\nLOUD",no:"004",r:"RARE"},
-    {n:"Sticker Pack",o:["Standard"],c:"#ff3b1f",a:"SLAP\nIT",no:"005",r:"COMMON"},
-    {n:"Collector Cards",o:["Pack of 6"],c:"#e8ff3a",a:"PACK\nOF 6",no:"006",r:"HOLO"}
+    {n:"Tape Logo Tee",m:"shirt1",o:["XS","S","M","L","XL","XXL"],c:"#19d3c5",no:"001",r:"RARE"},
+    {n:"Cassette (Limited)",m:"cassette1",o:["Standard"],c:"#ff4fb8",no:"002",r:"HOLO"},
+    {n:"Skate Deck",m:"deck1",o:["8.0\"","8.25\"","8.5\""],c:"#f3ecd8",deck:true,no:"003",r:"GRAIL"},
+    {n:"Flannel Beanie",m:"pants1",o:["One size"],c:"#2447ff",no:"004",r:"RARE"},
+    {n:"Sticker Pack",m:"stickers1",o:["Standard"],c:"#ff3b1f",no:"005",r:"COMMON"},
+    {n:"Collector Cards",m:"cards1",o:["Pack of 6"],c:"#e8ff3a",no:"006",r:"HOLO"}
   ],
   amounts: [3,5,10,25]
 };
@@ -523,7 +562,63 @@ $('#news-list').innerHTML=CONFIG.posts.map(p=>`<article class="post rv"><time>${
 const POWER={COMMON:1,RARE:3,HOLO:5,GRAIL:7};
 const powerOf=r=>POWER[String(r).toUpperCase()]||1;
 const powerHTML=r=>{const n=powerOf(r);return `<div class="pow" role="img" aria-label="Power ${n} of 7"><b>POWER ${n}</b>${Array.from({length:7},(_,k)=>`<i class="ball${k<n?'':' off'}">★</i>`).join('')}</div>`};
-$('#shop-list').innerHTML=CONFIG.shop.map((s,i)=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" style="background:${esc(s.c)}">${s.deck?`<div class="deck">${esc(s.a)}</div>`:`<span>${esc(s.a).replace(/\n/g,'<br>')}</span>`}</div><div class="info"><h3>${esc(s.n)}</h3>${powerHTML(s.r)}<button class="btn" type="button" data-req="${i}">Request this piece</button></div></div>`).join('');
+$('#shop-list').innerHTML=CONFIG.shop.map((s,i)=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" data-view="${i}" tabindex="0" role="button" aria-label="View photos: ${esc(s.n)}" style="background:${esc(s.c)}">${s.deck?'<div class="deck"></div>':''}<span class="zoom"></span></div><div class="info"><h3>${esc(s.n)}</h3>${powerHTML(s.r)}<button class="btn" type="button" data-req="${i}">Request this piece</button></div></div>`).join('');
+
+/* card photos: look for base+a, b, c... (png/jpg/jpeg/webp) and an optional base.mp4/.webm */
+const EXTS=['png','jpg','jpeg','webp'],LETTERS='abcdefgh';
+const mdir=()=>CONFIG.mediaDir||'';
+const probeImg=src=>new Promise(r=>{const x=new Image();x.onload=()=>r(src);x.onerror=()=>r(null);x.src=src});
+const probeVid=src=>new Promise(r=>{const x=document.createElement('video');let t=setTimeout(()=>done(null),4000);const done=v=>{clearTimeout(t);x.removeAttribute('src');x.load();r(v)};x.preload='metadata';x.onloadedmetadata=()=>done(src);x.onerror=()=>done(null);x.src=src});
+async function findImg(base,letter){for(const e of EXTS){const u=probeImg(mdir()+base+letter+'.'+e);if(await u)return mdir()+base+letter+'.'+e}return null}
+async function findVid(it){if(it.v)return mdir()+it.v;for(const e of ['mp4','webm']){const u=mdir()+it.m+'.'+e;if(await probeVid(u))return u}return null}
+const firstPhoto=it=>it._first||(it._first=it.m?findImg(it.m,'a'):Promise.resolve(null));
+const allMedia=it=>it._all||(it._all=(async()=>{const out=[];if(it.m){for(const L of LETTERS){const u=await findImg(it.m,L);if(!u)break;out.push({t:'img',src:u})}}if(it.m||it.v){const v=await findVid(it);if(v)out.push({t:'video',src:v})}return out})());
+CONFIG.shop.forEach((it,i)=>firstPhoto(it).then(u=>{if(!u)return;const a=document.querySelector('.art[data-view="'+i+'"]');if(!a)return;const dk=a.querySelector('.deck');if(dk)dk.remove();const im=document.createElement('img');im.src=u;im.alt=it.n;im.draggable=false;a.insertBefore(im,a.firstChild)}));
+
+/* card viewer (front / back / video) */
+const openView=(function(){
+  const v=$('#view'),slide=$('#v-slide'),dots=$('#v-dots'),cap=$('#v-cap'),prevB=$('#v-prev'),nextB=$('#v-next'),stage=$('#v-stage');
+  const LABELS=['Front','Back','Side','Detail','Detail 2','Detail 3','Detail 4','Detail 5'];
+  let items=[],idx=0,cur=-1,tok=0,tx=null;
+  const stopVid=()=>slide.querySelectorAll('video').forEach(x=>x.pause());
+  function render(){
+    stopVid();slide.innerHTML='';dots.innerHTML='';
+    if(!items.length){slide.innerHTML='<p class="soon">Photos coming soon</p>';cap.textContent='';prevB.hidden=nextB.hidden=true;return}
+    const m=items[idx],it=CONFIG.shop[cur];let el;
+    if(m.t==='video'){el=document.createElement('video');el.controls=true;el.playsInline=true;el.preload='metadata';el.src=m.src}
+    else{el=document.createElement('img');el.src=m.src;el.alt=it.n+' - '+(LABELS[idx]||'photo');el.draggable=false}
+    slide.append(el);
+    const lab=m.t==='video'?'Video':(LABELS[idx]||'Photo '+(idx+1));
+    cap.textContent=lab+(items.length>1?'  '+(idx+1)+'/'+items.length:'');
+    prevB.hidden=nextB.hidden=items.length<2;
+    if(items.length>1)items.forEach((x,k)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Go to '+(x.t==='video'?'video':'photo '+(k+1)));b.setAttribute('aria-current',k===idx);b.onclick=()=>{idx=k;render()};dots.append(b)});
+  }
+  const go=d=>{if(items.length<2)return;idx=(idx+d+items.length)%items.length;render()};
+  const close=()=>{stopVid();tok++;if(typeof v.close==='function')v.close();else v.removeAttribute('open')};
+  async function open(i){
+    const it=CONFIG.shop[i];if(!it)return;
+    cur=i;idx=0;items=[];const t=++tok;
+    $('#v-title').textContent=it.n;stage.style.setProperty('--stage',it.c);
+    slide.innerHTML='<p class="soon">Loading...</p>';cap.textContent='';dots.innerHTML='';prevB.hidden=nextB.hidden=true;
+    if(typeof v.showModal==='function'){if(!v.open)v.showModal()}else v.setAttribute('open','');
+    const m=await allMedia(it);if(t!==tok)return;items=m;render();
+  }
+  prevB.onclick=()=>go(-1);nextB.onclick=()=>go(1);
+  $('#v-x').onclick=close;
+  v.addEventListener('click',e=>{if(e.target===v)close()});
+  v.addEventListener('close',()=>{stopVid();tok++});
+  v.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(-1);else if(e.key==='ArrowRight')go(1)});
+  stage.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  stage.addEventListener('touchend',e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;tx=null;if(Math.abs(dx)>45)go(dx<0?1:-1)});
+  $('#v-req').onclick=()=>{const i=cur;close();openReq(i)};
+  return open;
+})();
+/* desktop: one click on the picture. phone: double-tap on the picture */
+{let lt=0,li=-1;
+$('#shop-list').addEventListener('pointerup',e=>{const a=e.target.closest('.art');if(!a)return;const i=+a.dataset.view;
+  if(e.pointerType==='touch'){const n=Date.now();if(li===i&&n-lt<400){lt=0;li=-1;openView(i)}else{lt=n;li=i}}
+  else if(e.button===0||e.button===undefined)openView(i)});
+$('#shop-list').addEventListener('keydown',e=>{const a=e.target.closest('.art');if(a&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openView(+a.dataset.view)}});}
 
 const dlg=$('#req'),form=$('#req-form'),done=$('#req-done');
 let reqItem=null;
