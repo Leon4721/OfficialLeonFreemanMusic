@@ -163,8 +163,13 @@ nav a:hover{background:var(--acid);color:#111}
 .deck{width:40%;height:92%;border-radius:40px;border:4px solid #111;background:linear-gradient(160deg,var(--pink),var(--hot) 60%,var(--blue));transform:rotate(-18deg);display:grid;place-items:center;font-size:1.5rem;color:#fff;writing-mode:vertical-rl;text-shadow:2px 2px 0 #111}
 .item .info{background:#fffaf0;border:2px solid #111;margin-top:8px;padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
 .item h3{font-size:1.35rem}
-.item .price{font-family:var(--marker);color:var(--hot);font-size:1.3rem}
-.item .price small{display:block;font-family:var(--type);font-size:.72rem;color:#111;opacity:.7}
+.item .pow{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.item .pow b{font-family:var(--marker);color:var(--hot);font-weight:400;font-size:1.05rem;margin-right:6px}
+.ball{width:22px;height:22px;border-radius:50%;border:2px solid #111;display:grid;place-items:center;font-style:normal;font-size:.72rem;line-height:1;background:radial-gradient(circle at 30% 28%,#fff3a0,#ffb300 40%,#ff7a00 75%,#d64500);color:#c1121f;box-shadow:1px 1px 0 #111}
+.ball.off{background:#d9d4c3;color:#a8a28f;opacity:.55;box-shadow:none}
+.item .pw-note{font-size:.72rem;opacity:.7;margin:0}
+.shop-contact{margin-top:40px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.shop-contact span{font-family:var(--marker);font-size:1.15rem}
 .item .btn{margin-top:auto;text-align:center;font-size:1rem;padding:9px;background:#111;color:#fff;box-shadow:3px 3px 0 var(--hot)}
 
 /* request dialog */
@@ -186,7 +191,10 @@ dialog.req::backdrop{background:rgba(0,0,0,.7)}
 .req .chk input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--hot)}
 .req .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .req .fine{font-size:.76rem;opacity:.8;margin:0}
+.req form[hidden],.req .done[hidden]{display:none}
 .req .done{padding:34px 22px;text-align:center}
+.req .done .sum{background:var(--acid);color:#111;border:3px solid #111;padding:10px 12px;margin:16px 0;font-weight:bold;overflow-wrap:anywhere}
+.req .done .tick{font-family:var(--display);font-size:4rem;line-height:1;color:var(--hot)}
 .req .done h3{font-size:2.4rem;margin-bottom:10px}
 @media (max-width:520px){.req .row2{grid-template-columns:1fr}}
 
@@ -287,6 +295,7 @@ footer p{opacity:.8;margin:8px 0 0}
   <p class="shop-intro">Every piece is made to order. Request the ones you want and I'll personally reply with your total, including shipping and delivery time, before you pay anything.</p>
   <ol class="shop-steps"><li><b>1</b>Request</li><li><b>2</b>Get your quote</li><li><b>3</b>Approve &amp; pay</li><li><b>4</b>Ships to you</li></ol>
   <div class="shop" id="shop-list"></div>
+  <div class="shop-contact"><span>Questions, custom orders, collabs?</span><button class="btn alt" type="button" data-contact>Contact us</button></div>
 </div></section>
 
 <section id="support"><div class="wrap">
@@ -309,6 +318,7 @@ footer p{opacity:.8;margin:8px 0 0}
 <div class="squad"><i></i><i></i><i></i><i></i><i></i></div>
 <footer class="grip"><div class="wrap">
   <div class="big">Stay loud.</div>
+  <p><button class="btn alt" type="button" data-contact>Contact us</button></p>
   <p>© <span id="yr"></span> Leon Freeman. All rights reserved. Kickflip responsibly.</p>
 </div></footer>
 
@@ -345,21 +355,45 @@ footer p{opacity:.8;margin:8px 0 0}
     <button class="btn" type="submit" id="req-send">Send my request</button>
     <p class="fine">Pieces are made to order and shipped from a production partner, so delivery times are confirmed in your quote.</p>
   </form>
-  <div class="done" id="req-done" hidden>
+  <div class="done" id="req-done" role="status" aria-live="polite" hidden>
+    <div class="tick" aria-hidden="true">✓</div>
     <h3>Request sent!</h3>
-    <p>Thank you. I'll check shipping and delivery for your address and email your personal quote within 48 hours. Check your spam folder just in case.</p>
+    <p class="sum" id="req-sum"></p>
+    <p>Thank you. I'll check shipping and delivery for your address and email your personal quote within 48 hours. No payment has been taken. Check your spam folder just in case.</p>
     <button class="btn alt" type="button" id="req-close2">Close</button>
   </div>
 </dialog>
 
-<div class="sample" id="sample" hidden>Sample content: news, prices and some links are placeholders. Edit CONFIG, then set <code>sample:false</code>.</div>
+<dialog class="req" id="contact" aria-labelledby="c-title">
+  <div class="top"><h3 id="c-title">Contact us</h3><button type="button" id="c-x" aria-label="Close">✕</button></div>
+  <form id="c-form" novalidate>
+    <p class="lead">Questions about an order, a custom piece, bookings or collabs? Send a message and I'll reply by email.</p>
+    <div class="row2">
+      <label>Your name<input name="name" autocomplete="name" required></label>
+      <label>Email<input name="email" type="email" autocomplete="email" required></label>
+    </div>
+    <label>Message<textarea name="message" required placeholder="What's on your mind?"></textarea></label>
+    <div class="hp" aria-hidden="true"><label>Leave empty<input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+    <label class="chk"><input type="checkbox" id="c-consent" required><span>I agree my details can be used to reply to this message. They'll never be sold.</span></label>
+    <button class="btn" type="submit" id="c-send">Send message</button>
+  </form>
+  <div class="done" id="c-done" role="status" aria-live="polite" hidden>
+    <div class="tick" aria-hidden="true">✓</div>
+    <h3>Message sent!</h3>
+    <p class="sum" id="c-sum"></p>
+    <p>Thanks for getting in touch. I'll reply by email soon. Check your spam folder just in case.</p>
+    <button class="btn alt" type="button" id="c-close2">Close</button>
+  </div>
+</dialog>
+
+<div class="sample" id="sample" hidden>Sample content: news and some links are placeholders. Edit CONFIG, then set <code>sample:false</code>.</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ===== EDIT ME: everything the site needs lives here ===== */
 const CONFIG = {
   artist: "Leon Freeman",
-  sample: true,          // true = shows a "sample content" banner. The news posts, prices and Instagram handle below are PLACEHOLDERS: replace them, then set this to false.
+  sample: true,          // true = shows a "sample content" banner. The news posts and Instagram handle below are PLACEHOLDERS: replace them, then set this to false.
   twitch: "leonmusic47",
   kick: "thelenard47",
   youtube: "UCZGfFP46RSBqNu4FDZiNZWA",   // channel ID for @leonfreeman8697
@@ -379,7 +413,7 @@ const CONFIG = {
         (free account at formspree.io, create a form, paste its URL here; requests arrive in your email)
      B) orderEmail: a fallback. Opens the customer's email app with the request filled in. Works with no signup, but is less smooth.
      Web3Forms users: set orderEndpoint to "https://api.web3forms.com/submit" and put your access key in orderKey. */
-  orderEndpoint: "",
+  orderEndpoint: "https://formspree.io/f/xrpebkkz",
   orderKey: "",
   orderEmail: "",
 
@@ -392,14 +426,14 @@ const CONFIG = {
     {d:"SEP 2026",t:"Friday night streams are back",b:"Live sets, beat-making and Q&A every Friday. Come hang out in chat.",x:"Streaming on Twitch, Kick and YouTube at the same time, so pick your spot."},
     {d:"AUG 2026",t:"Behind the Dial-Up Dreams video",b:"Shot on a handheld camcorder for that proper 90s tape look.",x:"Thanks to everyone who showed up in their worst thrift-store jackets."}
   ],
-  // art: text on the card; deck:true draws a skateboard instead. o = size/option choices shown in the request form
+  // art: text on the card; deck:true draws a skateboard instead. o = size/option choices shown in the request form. r = rarity, which sets the power rating (COMMON 1, RARE 3, HOLO 5, GRAIL 7 balls)
   shop: [
-    {n:"Tape Logo Tee",p:"£22",o:["XS","S","M","L","XL","XXL"],c:"#19d3c5",a:"LF\nTEE",no:"001",r:"RARE"},
-    {n:"Cassette (Limited)",p:"£12",o:["Standard"],c:"#ff4fb8",a:"VOL.\n1",no:"002",r:"HOLO"},
-    {n:"Skate Deck",p:"£55",o:["8.0\"","8.25\"","8.5\""],c:"#f3ecd8",deck:true,a:"LEON",no:"003",r:"GRAIL"},
-    {n:"Flannel Beanie",p:"£18",o:["One size"],c:"#2447ff",a:"STAY\nLOUD",no:"004",r:"RARE"},
-    {n:"Sticker Pack",p:"£5",o:["Standard"],c:"#ff3b1f",a:"SLAP\nIT",no:"005",r:"COMMON"},
-    {n:"Collector Cards",p:"£8",o:["Pack of 6"],c:"#e8ff3a",a:"PACK\nOF 6",no:"006",r:"HOLO"}
+    {n:"Tape Logo Tee",o:["XS","S","M","L","XL","XXL"],c:"#19d3c5",a:"LF\nTEE",no:"001",r:"RARE"},
+    {n:"Cassette (Limited)",o:["Standard"],c:"#ff4fb8",a:"VOL.\n1",no:"002",r:"HOLO"},
+    {n:"Skate Deck",o:["8.0\"","8.25\"","8.5\""],c:"#f3ecd8",deck:true,a:"LEON",no:"003",r:"GRAIL"},
+    {n:"Flannel Beanie",o:["One size"],c:"#2447ff",a:"STAY\nLOUD",no:"004",r:"RARE"},
+    {n:"Sticker Pack",o:["Standard"],c:"#ff3b1f",a:"SLAP\nIT",no:"005",r:"COMMON"},
+    {n:"Collector Cards",o:["Pack of 6"],c:"#e8ff3a",a:"PACK\nOF 6",no:"006",r:"HOLO"}
   ],
   amounts: [3,5,10,25]
 };
@@ -485,15 +519,18 @@ $('#tape').href=CONFIG.appleUrl||'#';
 /* news */
 $('#news-list').innerHTML=CONFIG.posts.map(p=>`<article class="post rv"><time>${esc(p.d)}</time><h3>${esc(p.t)}</h3><p style="margin:0">${esc(p.b)}</p><details><summary>Read more</summary><p>${esc(p.x)}</p></details></article>`).join('');
 
-/* shop: request-to-order */
-$('#shop-list').innerHTML=CONFIG.shop.map((s,i)=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" style="background:${esc(s.c)}">${s.deck?`<div class="deck">${esc(s.a)}</div>`:`<span>${esc(s.a).replace(/\n/g,'<br>')}</span>`}</div><div class="info"><h3>${esc(s.n)}</h3><div class="price">${esc(s.p)}<small>before shipping</small></div><button class="btn" type="button" data-req="${i}">Request this piece</button></div></div>`).join('');
+/* shop: request-to-order. Power rating = rarity: COMMON 1, RARE 3, HOLO 5, GRAIL 7 balls out of 7 */
+const POWER={COMMON:1,RARE:3,HOLO:5,GRAIL:7};
+const powerOf=r=>POWER[String(r).toUpperCase()]||1;
+const powerHTML=r=>{const n=powerOf(r);return `<div class="pow" role="img" aria-label="Power ${n} of 7"><b>POWER ${n}</b>${Array.from({length:7},(_,k)=>`<i class="ball${k<n?'':' off'}">★</i>`).join('')}</div>`};
+$('#shop-list').innerHTML=CONFIG.shop.map((s,i)=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" style="background:${esc(s.c)}">${s.deck?`<div class="deck">${esc(s.a)}</div>`:`<span>${esc(s.a).replace(/\n/g,'<br>')}</span>`}</div><div class="info"><h3>${esc(s.n)}</h3>${powerHTML(s.r)}<button class="btn" type="button" data-req="${i}">Request this piece</button></div></div>`).join('');
 
 const dlg=$('#req'),form=$('#req-form'),done=$('#req-done');
 let reqItem=null;
 function openReq(i){
   reqItem=CONFIG.shop[i];if(!reqItem)return;
   form.hidden=false;done.hidden=true;
-  $('#f-item').value=reqItem.n+' ('+reqItem.p+')';
+  $('#f-item').value=reqItem.n;
   $('#f-opt').innerHTML=(reqItem.o||['Standard']).map(o=>`<option>${esc(o)}</option>`).join('');
   $('#f-qty').value=1;
   if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
@@ -502,13 +539,13 @@ function closeReq(){if(typeof dlg.close==='function')dlg.close();else dlg.remove
 document.querySelectorAll('[data-req]').forEach(b=>b.onclick=()=>openReq(+b.dataset.req));
 $('#req-x').onclick=closeReq;$('#req-close2').onclick=closeReq;
 dlg.addEventListener('click',e=>{if(e.target===dlg)closeReq()});
-function finish(){form.reset();$('#f-qty').value=1;form.hidden=true;done.hidden=false;dlg.scrollTop=0}
+function finish(sum){form.reset();$('#f-qty').value=1;$('#req-sum').textContent=sum||'';form.hidden=true;done.hidden=false;dlg.scrollTop=0;toast('Request sent!')}
 form.onsubmit=async e=>{
   e.preventDefault();
   if(!form.checkValidity()||!$('#f-consent').checked){form.reportValidity();if(!$('#f-consent').checked)toast('Please tick the agreement box');return}
   const fd=new FormData(form);
   if(fd.get('_gotcha')){finish();return} // bots fill the hidden field: pretend it worked
-  const data={_subject:'Merch request: '+reqItem.n,item:reqItem.n,listed_price:reqItem.p};
+  const data={_subject:'Merch request: '+reqItem.n,item:reqItem.n,rarity:reqItem.r,power:powerOf(reqItem.r)+'/7'};
   fd.forEach((v,k)=>{if(k!=='_gotcha')data[k]=v});
   data.consent='yes';data.submitted=new Date().toISOString();
   const btn=$('#req-send');
@@ -517,15 +554,46 @@ form.onsubmit=async e=>{
     btn.disabled=true;btn.textContent='Sending...';
     try{
       const r=await fetch(CONFIG.orderEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
-      if(!r.ok)throw 0;finish();
+      if(!r.ok)throw 0;finish(`${data.quantity} × ${data.item} (${data.option}) for ${data.name}. We'll reply to ${data.email}.`);
     }catch(err){toast('Could not send. Please try again')}
     btn.disabled=false;btn.textContent='Send my request';
   }else if(CONFIG.orderEmail){
-    const lines=[`Item: ${data.item} (${data.listed_price})`,`Option: ${data.option}`,`Quantity: ${data.quantity}`,'',`Name: ${data.name}`,`Email: ${data.email}`,`Phone: ${data.phone||''}`,'',`Address: ${data.address1}`,data.address2||'',`${data.city}, ${data.postcode}`,data.country,'',`Notes: ${data.notes||''}`];
+    const lines=[`Item: ${data.item} (${data.rarity}, power ${data.power})`,`Option: ${data.option}`,`Quantity: ${data.quantity}`,'',`Name: ${data.name}`,`Email: ${data.email}`,`Phone: ${data.phone||''}`,'',`Address: ${data.address1}`,data.address2||'',`${data.city}, ${data.postcode}`,data.country,'',`Notes: ${data.notes||''}`];
     location.href='mailto:'+CONFIG.orderEmail+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(lines.join('\n'));
-    finish();
+    finish(`Your email app should now be open with your request in it. Press send there to complete it.`);
   }else toast('Owner: add orderEndpoint or orderEmail in CONFIG');
 };
+
+/* contact us: same form endpoint as merch requests */
+(function(){
+  const d=$('#contact'),f=$('#c-form'),ok=$('#c-done'),btn=$('#c-send');
+  const close=()=>{if(typeof d.close==='function')d.close();else d.removeAttribute('open')};
+  document.querySelectorAll('[data-contact]').forEach(b=>b.onclick=()=>{f.hidden=false;ok.hidden=true;if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')});
+  $('#c-x').onclick=close;$('#c-close2').onclick=close;
+  d.addEventListener('click',e=>{if(e.target===d)close()});
+  const finishC=sum=>{f.reset();$('#c-sum').textContent=sum||'';f.hidden=true;ok.hidden=false;d.scrollTop=0;toast('Message sent!')};
+  f.onsubmit=async e=>{
+    e.preventDefault();
+    if(!f.checkValidity()||!$('#c-consent').checked){f.reportValidity();if(!$('#c-consent').checked)toast('Please tick the agreement box');return}
+    const fd=new FormData(f);
+    if(fd.get('_gotcha')){finishC();return}
+    const data={_subject:'Contact: message from '+fd.get('name'),type:'contact'};
+    fd.forEach((v,k)=>{if(k!=='_gotcha')data[k]=v});
+    data.consent='yes';data.submitted=new Date().toISOString();
+    if(CONFIG.orderEndpoint){
+      if(CONFIG.orderKey){data.access_key=CONFIG.orderKey;data.subject=data._subject;data.from_name='Leon Freeman contact'}
+      btn.disabled=true;btn.textContent='Sending...';
+      try{
+        const r=await fetch(CONFIG.orderEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+        if(!r.ok)throw 0;finishC(`Thanks ${data.name}. I'll reply to ${data.email}.`);
+      }catch(err){toast('Could not send. Please try again')}
+      btn.disabled=false;btn.textContent='Send message';
+    }else if(CONFIG.orderEmail){
+      location.href='mailto:'+CONFIG.orderEmail+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`);
+      finishC('Your email app should now be open with your message in it. Press send there to complete it.');
+    }else toast('Owner: add orderEndpoint or orderEmail in CONFIG');
+  };
+})();
 
 /* donate */
 let amt=CONFIG.amounts[1];const chips=$('#chips');
