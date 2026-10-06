@@ -147,6 +147,10 @@ nav a:hover{background:var(--acid);color:#111}
 .post details p{margin:10px 0 0}
 
 /* shop: collector cards */
+.shop-intro{max-width:640px;margin:18px 0 0;font-size:1.05rem}
+.shop-steps{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0;padding:0;list-style:none;font-family:var(--display);text-transform:uppercase;font-size:.95rem}
+.shop-steps li{border:2px solid var(--ink);background:var(--card);padding:4px 12px}
+.shop-steps li b{color:var(--hot);font-weight:400;margin-right:6px}
 .shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:30px;margin-top:40px}
 .item{background:var(--acid);border:4px solid #111;border-radius:16px;padding:10px;display:flex;flex-direction:column;box-shadow:6px 6px 0 var(--blue);color:#111;transition:transform .2s}
 .item:hover{transform:translateY(-6px) rotate(-1.5deg)}
@@ -160,7 +164,31 @@ nav a:hover{background:var(--acid);color:#111}
 .item .info{background:#fffaf0;border:2px solid #111;margin-top:8px;padding:10px;display:flex;flex-direction:column;gap:6px;flex:1}
 .item h3{font-size:1.35rem}
 .item .price{font-family:var(--marker);color:var(--hot);font-size:1.3rem}
+.item .price small{display:block;font-family:var(--type);font-size:.72rem;color:#111;opacity:.7}
 .item .btn{margin-top:auto;text-align:center;font-size:1rem;padding:9px;background:#111;color:#fff;box-shadow:3px 3px 0 var(--hot)}
+
+/* request dialog */
+dialog.req{border:4px solid #111;background:var(--paper);color:var(--ink);padding:0;width:calc(100% - 24px);max-width:580px;max-height:92vh;box-shadow:10px 10px 0 var(--hot);font-family:var(--type);overflow:auto}
+dialog.req::backdrop{background:rgba(0,0,0,.7)}
+.req .top{display:flex;justify-content:space-between;align-items:start;gap:12px;background:#111;color:var(--acid);padding:14px 18px}
+.req .top h3{font-size:1.8rem}
+.req .top button{background:none;border:2px solid var(--acid);color:var(--acid);font-family:var(--display);font-size:1.1rem;cursor:pointer;padding:2px 10px}
+.req form{padding:18px;display:grid;gap:12px}
+.req .lead{margin:0;font-size:.92rem;opacity:.9}
+.req label{display:grid;gap:4px;font-size:.88rem}
+.req input,.req select,.req textarea{font:inherit;font-size:16px;padding:9px 10px;border:3px solid var(--ink);background:var(--card);color:var(--ink);width:100%;border-radius:0}
+.req input[readonly]{background:var(--acid);color:#111;font-weight:bold}
+.req textarea{min-height:70px;resize:vertical}
+.req .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.req fieldset{border:3px dashed var(--ink);padding:12px;margin:0;display:grid;gap:12px}
+.req legend{font-family:var(--display);text-transform:uppercase;padding:0 8px}
+.req .chk{display:flex;gap:10px;align-items:start;font-size:.82rem}
+.req .chk input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--hot)}
+.req .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.req .fine{font-size:.76rem;opacity:.8;margin:0}
+.req .done{padding:34px 22px;text-align:center}
+.req .done h3{font-size:2.4rem;margin-bottom:10px}
+@media (max-width:520px){.req .row2{grid-template-columns:1fr}}
 
 /* support */
 #support{background:var(--hot);color:#111}
@@ -181,7 +209,7 @@ nav a:hover{background:var(--acid);color:#111}
 footer{padding:50px 0 60px;text-align:center}
 footer .big{font-family:var(--display);font-size:clamp(2.4rem,8vw,5rem);text-transform:uppercase}
 footer p{opacity:.8;margin:8px 0 0}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,200%);background:var(--acid);color:#111;border:3px solid #111;padding:10px 18px;font-family:var(--display);text-transform:uppercase;z-index:120;transition:transform .25s;box-shadow:4px 4px 0 #111;max-width:90vw;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,200%);background:var(--acid);color:#111;border:3px solid #111;padding:10px 18px;font-family:var(--display);text-transform:uppercase;z-index:1000;transition:transform .25s;box-shadow:4px 4px 0 #111;max-width:90vw;text-align:center}
 .toast.show{transform:translate(-50%,0)}
 .sample{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:110;max-width:300px;background:#111;color:var(--acid);border:2px dashed var(--acid);padding:8px 12px;font-size:.8rem;line-height:1.3}
 .sample[hidden]{display:none}
@@ -256,6 +284,8 @@ footer p{opacity:.8;margin:8px 0 0}
 <section id="shop"><div class="wrap">
   <span class="tag">collect 'em all</span>
   <h2>Merch <span class="hl">Cards</span></h2>
+  <p class="shop-intro">Every piece is made to order. Request the ones you want and I'll personally reply with your total, including shipping and delivery time, before you pay anything.</p>
+  <ol class="shop-steps"><li><b>1</b>Request</li><li><b>2</b>Get your quote</li><li><b>3</b>Approve &amp; pay</li><li><b>4</b>Ships to you</li></ol>
   <div class="shop" id="shop-list"></div>
 </div></section>
 
@@ -281,6 +311,47 @@ footer p{opacity:.8;margin:8px 0 0}
   <div class="big">Stay loud.</div>
   <p>© <span id="yr"></span> Leon Freeman. All rights reserved. Kickflip responsibly.</p>
 </div></footer>
+
+<dialog class="req" id="req" aria-labelledby="req-title">
+  <div class="top"><h3 id="req-title">Request this piece</h3><button type="button" id="req-x" aria-label="Close">✕</button></div>
+  <form id="req-form" novalidate>
+    <p class="lead">No payment now. I'll check shipping and delivery time for your address and email you a personal quote within 48 hours. You only pay once you approve it.</p>
+    <label>Piece<input id="f-item" name="item" readonly></label>
+    <div class="row2">
+      <label>Size / option<select id="f-opt" name="option"></select></label>
+      <label>Quantity<input id="f-qty" name="quantity" type="number" min="1" max="20" value="1" required></label>
+    </div>
+    <fieldset>
+      <legend>About you</legend>
+      <label>Full name<input name="name" autocomplete="name" required></label>
+      <div class="row2">
+        <label>Email<input name="email" type="email" autocomplete="email" required></label>
+        <label>Phone (for the courier)<input name="phone" type="tel" autocomplete="tel"></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Delivery address</legend>
+      <label>Address line 1<input name="address1" autocomplete="address-line1" required></label>
+      <label>Address line 2 (optional)<input name="address2" autocomplete="address-line2"></label>
+      <div class="row2">
+        <label>Town / city<input name="city" autocomplete="address-level2" required></label>
+        <label>Postcode / ZIP<input name="postcode" autocomplete="postal-code" required></label>
+      </div>
+      <label>Country<input name="country" autocomplete="country-name" value="United Kingdom" required></label>
+    </fieldset>
+    <label>Anything else? (optional)<textarea name="notes" placeholder="Deadline, gift message, questions..."></textarea></label>
+    <div class="hp" aria-hidden="true"><label>Leave empty<input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+    <label class="chk"><input type="checkbox" id="f-consent" required><span>I agree my details can be used to prepare my quote and fulfil my order. They'll only be kept as long as needed and never sold. I understand that no payment is taken until I approve my quote.</span></label>
+    <button class="btn" type="submit" id="req-send">Send my request</button>
+    <p class="fine">Pieces are made to order and shipped from a production partner, so delivery times are confirmed in your quote.</p>
+  </form>
+  <div class="done" id="req-done" hidden>
+    <h3>Request sent!</h3>
+    <p>Thank you. I'll check shipping and delivery for your address and email your personal quote within 48 hours. Check your spam folder just in case.</p>
+    <button class="btn alt" type="button" id="req-close2">Close</button>
+  </div>
+</dialog>
+
 <div class="sample" id="sample" hidden>Sample content: news, prices and some links are placeholders. Edit CONFIG, then set <code>sample:false</code>.</div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -301,6 +372,17 @@ const CONFIG = {
   donateLinks: {         // one Stripe Payment Link per preset amount, e.g. 5:"https://buy.stripe.com/xxxx"
     3:"", 5:"", 10:"", 25:""
   },
+
+  /* ---- MERCH REQUESTS (made-to-order) ----
+     Where do requests go? Pick ONE:
+     A) orderEndpoint: your Formspree form URL, e.g. "https://formspree.io/f/abcdwxyz"
+        (free account at formspree.io, create a form, paste its URL here; requests arrive in your email)
+     B) orderEmail: a fallback. Opens the customer's email app with the request filled in. Works with no signup, but is less smooth.
+     Web3Forms users: set orderEndpoint to "https://api.web3forms.com/submit" and put your access key in orderKey. */
+  orderEndpoint: "",
+  orderKey: "",
+  orderEmail: "",
+
   socials: [
     {n:"Instagram",u:"https://instagram.com/freeman.leon"},
     {n:"TikTok",u:"https://www.tiktok.com/@leonfreemanmusic"},{n:"YouTube",u:"https://www.youtube.com/@leonfreeman8697"},{n:"Twitch",u:"https://www.twitch.tv/leonmusic47"},{n:"Kick",u:"https://kick.com/thelenard47"},{n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"},{n:"Apple Music",u:"https://music.apple.com/us/artist/leon-freeman/1557115126"},{n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"}
@@ -310,14 +392,14 @@ const CONFIG = {
     {d:"SEP 2026",t:"Friday night streams are back",b:"Live sets, beat-making and Q&A every Friday. Come hang out in chat.",x:"Streaming on Twitch, Kick and YouTube at the same time, so pick your spot."},
     {d:"AUG 2026",t:"Behind the Dial-Up Dreams video",b:"Shot on a handheld camcorder for that proper 90s tape look.",x:"Thanks to everyone who showed up in their worst thrift-store jackets."}
   ],
-  // art: text on the card; deck:true draws a skateboard instead
+  // art: text on the card; deck:true draws a skateboard instead. o = size/option choices shown in the request form
   shop: [
-    {n:"Tape Logo Tee",p:"£22",u:"",c:"#19d3c5",a:"LF\nTEE",no:"001",r:"RARE"},
-    {n:"Cassette (Limited)",p:"£12",u:"",c:"#ff4fb8",a:"VOL.\n1",no:"002",r:"HOLO"},
-    {n:"Skate Deck",p:"£55",u:"",c:"#f3ecd8",deck:true,a:"LEON",no:"003",r:"GRAIL"},
-    {n:"Flannel Beanie",p:"£18",u:"",c:"#2447ff",a:"STAY\nLOUD",no:"004",r:"RARE"},
-    {n:"Sticker Pack",p:"£5",u:"",c:"#ff3b1f",a:"SLAP\nIT",no:"005",r:"COMMON"},
-    {n:"Collector Cards",p:"£8",u:"",c:"#e8ff3a",a:"PACK\nOF 6",no:"006",r:"HOLO"}
+    {n:"Tape Logo Tee",p:"£22",o:["XS","S","M","L","XL","XXL"],c:"#19d3c5",a:"LF\nTEE",no:"001",r:"RARE"},
+    {n:"Cassette (Limited)",p:"£12",o:["Standard"],c:"#ff4fb8",a:"VOL.\n1",no:"002",r:"HOLO"},
+    {n:"Skate Deck",p:"£55",o:["8.0\"","8.25\"","8.5\""],c:"#f3ecd8",deck:true,a:"LEON",no:"003",r:"GRAIL"},
+    {n:"Flannel Beanie",p:"£18",o:["One size"],c:"#2447ff",a:"STAY\nLOUD",no:"004",r:"RARE"},
+    {n:"Sticker Pack",p:"£5",o:["Standard"],c:"#ff3b1f",a:"SLAP\nIT",no:"005",r:"COMMON"},
+    {n:"Collector Cards",p:"£8",o:["Pack of 6"],c:"#e8ff3a",a:"PACK\nOF 6",no:"006",r:"HOLO"}
   ],
   amounts: [3,5,10,25]
 };
@@ -403,9 +485,47 @@ $('#tape').href=CONFIG.appleUrl||'#';
 /* news */
 $('#news-list').innerHTML=CONFIG.posts.map(p=>`<article class="post rv"><time>${esc(p.d)}</time><h3>${esc(p.t)}</h3><p style="margin:0">${esc(p.b)}</p><details><summary>Read more</summary><p>${esc(p.x)}</p></details></article>`).join('');
 
-/* shop */
-$('#shop-list').innerHTML=CONFIG.shop.map(s=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" style="background:${esc(s.c)}">${s.deck?`<div class="deck">${esc(s.a)}</div>`:`<span>${esc(s.a).replace(/\n/g,'<br>')}</span>`}</div><div class="info"><h3>${esc(s.n)}</h3><div class="price">${esc(s.p)}</div><a class="btn" href="${s.u?esc(s.u):'#'}" ${s.u?'target="_blank" rel="noopener"':''}>Buy it</a></div></div>`).join('');
-document.querySelectorAll('#shop-list .btn').forEach(b=>{if(b.getAttribute('href')==='#')b.onclick=e=>{e.preventDefault();toast('Add a Stripe or Shopify link for this item')}});
+/* shop: request-to-order */
+$('#shop-list').innerHTML=CONFIG.shop.map((s,i)=>`<div class="item rv"><div class="hd"><span>No.${esc(s.no)}</span><em>${esc(s.r)}</em></div><div class="art" style="background:${esc(s.c)}">${s.deck?`<div class="deck">${esc(s.a)}</div>`:`<span>${esc(s.a).replace(/\n/g,'<br>')}</span>`}</div><div class="info"><h3>${esc(s.n)}</h3><div class="price">${esc(s.p)}<small>before shipping</small></div><button class="btn" type="button" data-req="${i}">Request this piece</button></div></div>`).join('');
+
+const dlg=$('#req'),form=$('#req-form'),done=$('#req-done');
+let reqItem=null;
+function openReq(i){
+  reqItem=CONFIG.shop[i];if(!reqItem)return;
+  form.hidden=false;done.hidden=true;
+  $('#f-item').value=reqItem.n+' ('+reqItem.p+')';
+  $('#f-opt').innerHTML=(reqItem.o||['Standard']).map(o=>`<option>${esc(o)}</option>`).join('');
+  $('#f-qty').value=1;
+  if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+}
+function closeReq(){if(typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+document.querySelectorAll('[data-req]').forEach(b=>b.onclick=()=>openReq(+b.dataset.req));
+$('#req-x').onclick=closeReq;$('#req-close2').onclick=closeReq;
+dlg.addEventListener('click',e=>{if(e.target===dlg)closeReq()});
+function finish(){form.reset();$('#f-qty').value=1;form.hidden=true;done.hidden=false;dlg.scrollTop=0}
+form.onsubmit=async e=>{
+  e.preventDefault();
+  if(!form.checkValidity()||!$('#f-consent').checked){form.reportValidity();if(!$('#f-consent').checked)toast('Please tick the agreement box');return}
+  const fd=new FormData(form);
+  if(fd.get('_gotcha')){finish();return} // bots fill the hidden field: pretend it worked
+  const data={_subject:'Merch request: '+reqItem.n,item:reqItem.n,listed_price:reqItem.p};
+  fd.forEach((v,k)=>{if(k!=='_gotcha')data[k]=v});
+  data.consent='yes';data.submitted=new Date().toISOString();
+  const btn=$('#req-send');
+  if(CONFIG.orderEndpoint){
+    if(CONFIG.orderKey){data.access_key=CONFIG.orderKey;data.subject=data._subject;data.from_name='Leon Freeman merch'}
+    btn.disabled=true;btn.textContent='Sending...';
+    try{
+      const r=await fetch(CONFIG.orderEndpoint,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});
+      if(!r.ok)throw 0;finish();
+    }catch(err){toast('Could not send. Please try again')}
+    btn.disabled=false;btn.textContent='Send my request';
+  }else if(CONFIG.orderEmail){
+    const lines=[`Item: ${data.item} (${data.listed_price})`,`Option: ${data.option}`,`Quantity: ${data.quantity}`,'',`Name: ${data.name}`,`Email: ${data.email}`,`Phone: ${data.phone||''}`,'',`Address: ${data.address1}`,data.address2||'',`${data.city}, ${data.postcode}`,data.country,'',`Notes: ${data.notes||''}`];
+    location.href='mailto:'+CONFIG.orderEmail+'?subject='+encodeURIComponent(data._subject)+'&body='+encodeURIComponent(lines.join('\n'));
+    finish();
+  }else toast('Owner: add orderEndpoint or orderEmail in CONFIG');
+};
 
 /* donate */
 let amt=CONFIG.amounts[1];const chips=$('#chips');
