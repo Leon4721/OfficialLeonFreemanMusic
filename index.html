@@ -281,6 +281,7 @@ footer p{opacity:.8;margin:8px 0 0}
   <div class="big">Stay loud.</div>
   <p>© <span id="yr"></span> Leon Freeman. All rights reserved. Kickflip responsibly.</p>
 </div></footer>
+<div class="sample" id="sample" hidden>Sample content: news, prices and some links are placeholders. Edit CONFIG, then set <code>sample:false</code>.</div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -296,7 +297,10 @@ const CONFIG = {
   appleUrl: "https://music.apple.com/us/artist/leon-freeman/1557115126",
   trackLimit: 25,        // how many songs to show
   listen: [ {n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"}, {n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"} ],
-  donateUrl: "",         // Stripe Payment Link, Ko-fi or Patreon
+  donateUrl: "https://buy.stripe.com/5kQ4gB0ot39qcgdbaF1wY00",   // Stripe Payment Link used for the "£ other" box (make it a "customers choose what to pay" link)
+  donateLinks: {         // one Stripe Payment Link per preset amount, e.g. 5:"https://buy.stripe.com/xxxx"
+    3:"", 5:"", 10:"", 25:""
+  },
   socials: [
     {n:"Instagram",u:"https://instagram.com/freeman.leon"},
     {n:"TikTok",u:"https://www.tiktok.com/@leonfreemanmusic"},{n:"YouTube",u:"https://www.youtube.com/@leonfreeman8697"},{n:"Twitch",u:"https://www.twitch.tv/leonmusic47"},{n:"Kick",u:"https://kick.com/thelenard47"},{n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"},{n:"Apple Music",u:"https://music.apple.com/us/artist/leon-freeman/1557115126"},{n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"}
@@ -322,7 +326,7 @@ const $=s=>document.querySelector(s), E=(t,c,h)=>{const e=document.createElement
 const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.k);toast.k=setTimeout(()=>t.classList.remove('show'),2600)};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('#yr').textContent=new Date().getFullYear();
-$('#sample').hidden=!CONFIG.sample;
+{const sm=$('#sample');if(sm)sm.hidden=!CONFIG.sample}
 
 /* live tv */
 const screen=$('#screen'),tabs=$('#tabs');
@@ -408,7 +412,7 @@ let amt=CONFIG.amounts[1];const chips=$('#chips');
 CONFIG.amounts.forEach(a=>{const b=E('button','','£'+a);b.setAttribute('aria-pressed',a===amt);b.onclick=()=>{amt=a;cu.value='';sync()};chips.append(b)});
 const cu=E('input');cu.type='number';cu.min=1;cu.placeholder='£ other';cu.setAttribute('aria-label','Custom amount');cu.oninput=()=>{amt=+cu.value||0;sync()};chips.append(cu);
 function sync(){[...chips.querySelectorAll('button')].forEach((b,i)=>b.setAttribute('aria-pressed',CONFIG.amounts[i]===amt))}
-$('#give').onclick=()=>{if(!amt)return toast('Pick an amount first');if(!CONFIG.donateUrl)return toast('Add your donate link in CONFIG');window.open(CONFIG.donateUrl,'_blank','noopener')};
+$('#give').onclick=()=>{if(!amt)return toast('Pick an amount first');const u=(CONFIG.donateLinks&&CONFIG.donateLinks[amt])||CONFIG.donateUrl;if(!u)return toast('Add your Stripe link in CONFIG');window.open(u,'_blank','noopener')};
 
 /* socials */
 $('#socials').innerHTML=CONFIG.socials.map(s=>`<a href="${s.u?esc(s.u):'#'}" ${s.u?'target="_blank" rel="noopener"':''}>${esc(s.n)}</a>`).join('');
