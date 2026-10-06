@@ -297,7 +297,7 @@ const CONFIG = {
   appleUrl: "https://music.apple.com/us/artist/leon-freeman/1557115126",
   trackLimit: 25,        // how many songs to show
   listen: [ {n:"Spotify",u:"https://open.spotify.com/artist/7EhWgyoD7eRmhmeVn95CHc"}, {n:"SoundCloud",u:"https://soundcloud.com/avianmind/tracks"} ],
-  donateUrl: "https://buy.stripe.com/5kQ4gB0ot39qcgdbaF1wY00",   // Stripe Payment Link used for the "£ other" box (make it a "customers choose what to pay" link)
+  donateUrl: "https://buy.stripe.com/5kQ4gB0ot39qcgdbaF1wY00",   // Stripe pay-what-you-want link. The page adds the chosen amount to it automatically (prefilled_amount, in pence)
   donateLinks: {         // one Stripe Payment Link per preset amount, e.g. 5:"https://buy.stripe.com/xxxx"
     3:"", 5:"", 10:"", 25:""
   },
@@ -412,7 +412,7 @@ let amt=CONFIG.amounts[1];const chips=$('#chips');
 CONFIG.amounts.forEach(a=>{const b=E('button','','£'+a);b.setAttribute('aria-pressed',a===amt);b.onclick=()=>{amt=a;cu.value='';sync()};chips.append(b)});
 const cu=E('input');cu.type='number';cu.min=1;cu.placeholder='£ other';cu.setAttribute('aria-label','Custom amount');cu.oninput=()=>{amt=+cu.value||0;sync()};chips.append(cu);
 function sync(){[...chips.querySelectorAll('button')].forEach((b,i)=>b.setAttribute('aria-pressed',CONFIG.amounts[i]===amt))}
-$('#give').onclick=()=>{if(!amt)return toast('Pick an amount first');const u=(CONFIG.donateLinks&&CONFIG.donateLinks[amt])||CONFIG.donateUrl;if(!u)return toast('Add your Stripe link in CONFIG');window.open(u,'_blank','noopener')};
+$('#give').onclick=()=>{if(!amt)return toast('Pick an amount first');let u=CONFIG.donateLinks&&CONFIG.donateLinks[amt];if(!u&&CONFIG.donateUrl){try{const x=new URL(CONFIG.donateUrl);x.searchParams.set('prefilled_amount',Math.round(amt*100));u=x.toString()}catch(e){u=CONFIG.donateUrl}}if(!u)return toast('Add your Stripe link in CONFIG');window.open(u,'_blank','noopener')};
 
 /* socials */
 $('#socials').innerHTML=CONFIG.socials.map(s=>`<a href="${s.u?esc(s.u):'#'}" ${s.u?'target="_blank" rel="noopener"':''}>${esc(s.n)}</a>`).join('');
