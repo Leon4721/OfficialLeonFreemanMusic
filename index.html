@@ -494,7 +494,7 @@ const srcs={
   Kick:c=>`https://player.kick.com/${encodeURIComponent(c)}`,
   YouTube:c=>ytMode==='uploads'?`https://www.youtube.com/embed/videoseries?list=UU${encodeURIComponent(c.slice(2))}`:`https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(c)}`
 };
-let ytMode='live'; // 'live' shows your current stream; 'uploads' shows your latest videos (works when you're offline)
+let ytMode='uploads'; // 'live' shows your current stream; 'uploads' shows your latest videos (works when you're offline)
 const keys={Twitch:'twitch',Kick:'kick',YouTube:'youtube'};
 function show(name){
   noiseOn=false;screen.innerHTML='';
@@ -508,7 +508,7 @@ function show(name){
   else{noiseOn=true;screen.append(noise);stat();screen.append(E('div','msg',needsHost?`No signal<small>${name} only plays once this page is hosted online (e.g. GitHub Pages). Use "Watch on ${name}" for now.</small>`:`No signal<small>${name} isn't linked yet. Add the channel in CONFIG.</small>`));$('#led').className='led';$('#led').lastChild.textContent='OFF AIR'}
 }
 Object.keys(keys).forEach(n=>{const b=E('button','',n);b.dataset.n=n;b.onclick=()=>show(n);tabs.append(b)});
-const pages={Twitch:'https://www.twitch.tv/'+CONFIG.twitch,Kick:'https://kick.com/'+CONFIG.kick,YouTube:'https://www.youtube.com/channel/'+CONFIG.youtube+'/live'};
+const pages={Twitch:'https://www.twitch.tv/'+CONFIG.twitch,Kick:'https://kick.com/'+CONFIG.kick,YouTube:'https://www.youtube.com/channel/'+CONFIG.youtube+'/videos'};
 const openLink=E('a','openlink','Open on site ↗');openLink.target='_blank';openLink.rel='noopener';openLink.id='openlink';tabs.append(openLink);
 const ytBtn=E('button','','Latest videos');ytBtn.hidden=true;ytBtn.title='Switch between your live stream and your latest uploads';
 ytBtn.onclick=()=>{ytMode=ytMode==='live'?'uploads':'live';show('YouTube')};tabs.append(ytBtn);
